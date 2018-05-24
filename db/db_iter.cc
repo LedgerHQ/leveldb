@@ -14,6 +14,16 @@
 #include "util/mutexlock.h"
 #include "util/random.h"
 
+#if defined(_MSC_VER) && _MSC_VER <= 1900
+#  if defined(_WIN64)
+       typedef __int64 LONG_PTR;
+  #  else
+       typedef long LONG_PTR;
+  #  endif
+    typedef LONG_PTR SSIZE_T;
+    typedef SSIZE_T ssize_t;
+#endif
+
 namespace leveldb {
 
 #if 0
