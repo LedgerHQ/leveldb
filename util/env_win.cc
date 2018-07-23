@@ -766,14 +766,14 @@ static Status CreateDirInner( const std::string& dirname )
     Status sRet;
     std::wstring wdirname;
     ToWidePath(dirname, wdirname);
-    DWORD attr = ::GetFileAttributes(wdirname.c_str());
+    DWORD attr = ::GetFileAttributesW(wdirname.c_str());
     if (attr == INVALID_FILE_ATTRIBUTES) { // doesn't exist:
       std::size_t slash = dirname.find_last_of("\\");
       if (slash != std::string::npos){
 	sRet = CreateDirInner(dirname.substr(0, slash));
 	if (!sRet.ok()) return sRet;
       }
-      BOOL result = ::CreateDirectory(wdirname.c_str(), NULL);
+      BOOL result = ::CreateDirectoryW(wdirname.c_str(), NULL);
       if (result == FALSE) {
 	sRet = Status::IOError(dirname, "Could not create directory.");
 	return sRet;
