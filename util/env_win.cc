@@ -203,13 +203,13 @@ public:
 
 void ToWidePath(const std::string& value, std::wstring& target) {
 	wchar_t buffer[MAX_PATH];
-	MultiByteToWideChar(CP_ACP, 0, value.c_str(), -1, buffer, MAX_PATH);
+	MultiByteToWideChar(CP_UTF8, 0, value.c_str(), -1, buffer, MAX_PATH);
 	target = buffer;
 }
 
 void ToNarrowPath(const std::wstring& value, std::string& target) {
 	char buffer[MAX_PATH];
-	WideCharToMultiByte(CP_ACP, 0, value.c_str(), -1, buffer, MAX_PATH, NULL, NULL);
+	WideCharToMultiByte(CP_UTF8, 0, value.c_str(), -1, buffer, MAX_PATH, NULL, NULL);
 	target = buffer;
 }
 
@@ -764,14 +764,16 @@ uint64_t Win32Env::NowMicros()
 static Status CreateDirInner( const std::string& dirname )
 {
     Status sRet;
-    DWORD attr = ::GetFileAttributes(dirname.c_str());
+    std::wstring wdirname;
+    ToWidePath(dirname, wdirname);
+    DWORD attr = ::GetFileAttributes(wdirname.c_str());
     if (attr == INVALID_FILE_ATTRIBUTES) { // doesn't exist:
       std::size_t slash = dirname.find_last_of("\\");
       if (slash != std::string::npos){
 	sRet = CreateDirInner(dirname.substr(0, slash));
 	if (!sRet.ok()) return sRet;
       }
-      BOOL result = ::CreateDirectory(dirname.c_str(), NULL);
+      BOOL result = ::CreateDirectory(wdirname.c_str(), NULL);
       if (result == FALSE) {
 	sRet = Status::IOError(dirname, "Could not create directory.");
 	return sRet;
