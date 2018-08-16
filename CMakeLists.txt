@@ -85,6 +85,8 @@ elseif(CYGWIN)
     add_definitions(-DLEVELDB_PLATFORM_POSIX -DOS_LINUX)
 elseif(APPLE)
     add_definitions(-DLEVELDB_PLATFORM_POSIX -DOS_MACOSX)
+elseif(ANDROID)
+add_definitions(-DLEVELDB_PLATFORM_POSIX -DOS_ANDROID)
 endif()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} include)
