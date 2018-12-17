@@ -3,6 +3,10 @@ project(leveldb C CXX)
 
 option(INSTALL_HEADERS "Install header files" ON)
 
+if(MSVC AND BUILD_SHARED_LIBS)
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+endif(MSVC)
+
 if(WIN32)
     add_definitions(
             -DWIN32
