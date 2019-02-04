@@ -5,8 +5,7 @@
 #include "leveldb/c.h"
 
 #include <stdlib.h>
-
-#ifndef _MSC_VER
+#ifndef WIN32
 #include <unistd.h>
 #endif
 

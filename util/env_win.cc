@@ -213,20 +213,19 @@ void ToNarrowPath(const std::wstring& value, std::string& target) {
 	target = buffer;
 }
 
-std::string GetCurrentDir()
-{
-    CHAR path[MAX_PATH];
-    ::GetModuleFileNameA(::GetModuleHandleA(NULL),path,MAX_PATH);
-    *strrchr(path,'\\') = 0;
-    return std::string(path);
-}
-
 std::wstring GetCurrentDirW()
 {
     WCHAR path[MAX_PATH];
     ::GetModuleFileNameW(::GetModuleHandleW(NULL),path,MAX_PATH);
     *wcsrchr(path,L'\\') = 0;
     return std::wstring(path);
+}
+
+std::string GetCurrentDir()
+{
+    std::string path;
+    ToNarrowPath(GetCurrentDirW(), path);
+    return path;
 }
 
 std::string& ModifyPath(std::string& path)
@@ -764,16 +763,16 @@ uint64_t Win32Env::NowMicros()
 static Status CreateDirInner( const std::string& dirname )
 {
     Status sRet;
-    std::wstring wdirname;
-    ToWidePath(dirname, wdirname);
-    DWORD attr = ::GetFileAttributesW(wdirname.c_str());
+    std::wstring dirnameW;
+    ToWidePath(dirname, dirnameW);
+    DWORD attr = ::GetFileAttributesW(dirnameW.c_str());
     if (attr == INVALID_FILE_ATTRIBUTES) { // doesn't exist:
       std::size_t slash = dirname.find_last_of("\\");
       if (slash != std::string::npos){
 	sRet = CreateDirInner(dirname.substr(0, slash));
 	if (!sRet.ok()) return sRet;
       }
-      BOOL result = ::CreateDirectoryW(wdirname.c_str(), NULL);
+      BOOL result = ::CreateDirectoryW(dirnameW.c_str(), NULL);
       if (result == FALSE) {
 	sRet = Status::IOError(dirname, "Could not create directory.");
 	return sRet;
